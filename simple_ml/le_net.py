@@ -10,25 +10,30 @@ loss is calculated by cross-entropy
 
 mnist = read_data.read_data_sets("MNIST_data/", one_hot=True)
 
-learning_rate = 0.01
-batch_size = 100
+learning_rate = 0.0001
+batch_size = 50
 validation_size = 1000
-episode_count = 100
+episode_count = 20000
 
 def weight_variable(shape):
     # output a weight variable with the shape in the argument, shape is a tuple
     # initialize by Xavier initialization
     # the last variable is output size, the first few multiply will be input size
+    initial = tf.truncated_normal(list(shape), stddev=0.1)
+    return tf.Variable(initial, 'weight')
+
+    """
     Nin = np.prod(shape) / shape[-1]
     Nout = shape[-1]
     variance = np.sqrt(3 / (Nin + Nout))
     w_init = np.random.normal(scale = variance, size = shape)
     w = tf.Variable(w_init, dtype = tf.float32, name = 'weight')
     return w
+    """
 
 def bias_variable(shape):
     # output a bias variable with the shape in the argument, shape is a tuple
-    b_init = np.zeros(shape)
+    b_init = np.ones(shape) * 0.1
     b = tf.Variable(b_init, dtype = tf.float32, name = 'bias')
     return b
 
@@ -82,9 +87,11 @@ with tf.name_scope('readout_layer'):
 
     y_conv = tf.matmul(h3_drop, w4) + b4
 
+
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_conv, tf.cast(y_train, tf.float32)), 0)
 
 optimizer = tf.train.AdamOptimizer(learning_rate)
+#optimizer = tf.train.GradientDescentOptimizer(0.5)
 adam = optimizer.minimize(loss)
 
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.where(y_train)[:, 1], tf.argmax(y_conv, 1)), tf.float32), 0)
@@ -97,14 +104,19 @@ for episode_index in range(episode_count):
     Xtrain, Ytrain = mnist.train.next_batch(batch_size)
     kp = 0.5
     feed = {x_train: Xtrain, y_train: Ytrain, keep_prob: kp}
-
     _, l = sess.run([adam, loss], feed)
     
+    kp = 1.0
     Xval, Yval = mnist.validation.next_batch(validation_size)
     feed = {x_train: Xval, y_train: Yval, keep_prob: kp}
     a = sess.run(accuracy, feed)
-    print "episode: " + str(episode_index + 1) + " ,loss: ", l, " ,accuracy: ",a
+
+    print "episode: " + str(episode_index + 1) + " ,loss: ", l, " ,accuracy: ", a
 
 
-
-
+print "========= test ============"
+kp = 1.0
+Xtest = mnist.validation.images
+Ytest = mnist.validation.labels
+feed = {x_train: Xtest, y_train: Ytest, keep_prob: kp}
+print "test accuracy: ",sess.run(accuracy, feed)
