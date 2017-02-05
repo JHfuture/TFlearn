@@ -12,7 +12,7 @@ mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 memory_unit = 128
 learning_rate = 0.001
 batch_size = 50
-epoch_count = 200
+epoch_count = 2000
 validation_size = 100
 
 step_size = 28
@@ -66,6 +66,7 @@ for epoch_index in range(epoch_count):
 
 Xtest = mnist.test.images
 Ytest = mnist.test.labels
+Xtest = np.reshape(Xtest, (-1, step_size, input_size))
 feed = {x:Xtest, y:Ytest}
 print "========== test case ==========="
 print "test accuracy: ", sess.run(accuracy, feed)
