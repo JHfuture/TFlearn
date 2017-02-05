@@ -20,7 +20,7 @@ loss = tf.reduce_sum(tf.square(y - y_data), 0)
 optimizer = tf.train.AdamOptimizer(0.01)
 train_op = optimizer.minimize(loss)
 
-init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 
 sess = tf.Session()
 sess.run(init)
