@@ -70,7 +70,7 @@ prediction_val = tf.argmax(tf.matmul(val_data, w) + b, 1)
 correctness_val = tf.cast(tf.equal(tf.where(y_val)[:,1], prediction_val), tf.float32)
 accuracy_val = tf.reduce_mean(correctness_val, 0)
 
-init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 
 sess = tf.Session()
 sess.run(init)

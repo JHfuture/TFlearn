@@ -32,7 +32,7 @@ fact_val = tf.where(y_validation)[:,1]
 prediction_val = tf.argmax(tf.matmul(x_validation, W) + b, 1)
 accuracy = tf.reduce_sum(tf.cast(tf.equal(fact_val, prediction_val), tf.float32), 0) / tf.cast(validation_size, tf.float32)
 
-init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 
 sess = tf.Session()
 sess.run(init)

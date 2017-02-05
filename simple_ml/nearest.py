@@ -24,8 +24,8 @@ x_test_tiled = tf.reshape(tf.tile(x_test, [1, x_train_shape[0]]),
         [x_test_shape[0], x_train_shape[0], 784]) 
 
 # the distance of each train set to each test set (axis 0 is test, axis 1 is train)
-distance = tf.reduce_sum(tf.abs(x_test_tiled - x_train), axis = 2)
-best_fit = tf.argmin(distance, axis = 1)
+distance = tf.reduce_sum(tf.abs(x_test_tiled - x_train), 2)
+best_fit = tf.argmin(distance, 1)
 # tensor indexing to find the test set result (this is result, the rest is testing accuracy)
 nearest = tf.gather(y_train, best_fit)
 # how many among the test results are correct
@@ -33,7 +33,7 @@ correctness = tf.reduce_sum(tf.cast(tf.equal(nearest, y_test), tf.float32), 0)
 accuracy = correctness / tf.cast(x_test_shape[0], tf.float32)
 
 # initialize the variables
-init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 
 feed = {x_train: Xtrain, y_train: Ytrain, x_test: Xtest, y_test: Ytest}
 sess = tf.Session()

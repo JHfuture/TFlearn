@@ -10,7 +10,7 @@ loss is calculated by cross-entropy
 
 mnist = read_data.read_data_sets("MNIST_data/", one_hot=True)
 
-learning_rate = 0.001
+learning_rate = 0.01
 batch_size = 100
 validation_size = 1000
 episode_count = 100
@@ -89,7 +89,7 @@ adam = optimizer.minimize(loss)
 
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.where(y_train)[:, 1], tf.argmax(y_conv, 1)), tf.float32), 0)
 
-init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
 
