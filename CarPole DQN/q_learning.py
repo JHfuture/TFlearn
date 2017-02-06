@@ -7,12 +7,13 @@ import random
 class Q_Learning:
     MAX_STEP_COUNT = 1000
     REG_FACTOR = 0.001
-    LEARNING_RATE = 0.0003
+    LEARNING_RATE = 0.0001
     EPISODE_COUNT = 20000
     RANDOM_ACTION_PROB = 0.5
+    MIN_RANDOM_ACTION_PROB = 0.01
     EPSILON_DECAY = 0.99
     MAX_EXPERIENCE_LENGTH = 10000
-    MINI_BATCH_SIZE = 10
+    MINI_BATCH_SIZE = 32
     TARGET_UPDATE_COUNT = 100
     DISCOUNT_FACTOR = 0.9
     def __init__(self, env, nn_config):
@@ -111,8 +112,8 @@ class Q_Learning:
     #                    print ""
                 # get experience (s, a, r, s', end)
                 next_state, reward, done, _ = self.env.step(action)
-                if done:
-                    reward = -100
+#                if done:
+#                    reward = -100
                 # store them in experience list
                 if len(self.experience) >= self.MAX_EXPERIENCE_LENGTH:
                     self.experience.pop(0)
@@ -137,18 +138,19 @@ class Q_Learning:
 
                     feed = {self.x : states, self.target_Q : target_Q, self.action_mask: action_mask}
 
-                    _, l, dq = self.sess.run([self.adam, self.loss, self.Q_difference], feed)
+                    _, l, dq, p = self.sess.run([self.adam, self.loss, self.Q_difference, self.params], feed)
                 # update target network to current network
                 if self.total_steps % self.TARGET_UPDATE_COUNT == 0:
                     self.target_params = self.sess.run(self.params)
                 # decay epsilon greedy epsilon
                 self.RANDOM_ACTION_PROB *= self.EPSILON_DECAY
+                self.RANDOM_ACTION_PROB = max(self.RANDOM_ACTION_PROB, self.MIN_RANDOM_ACTION_PROB)
                 if done:
                     print step_count
                     break
 
 if __name__ == '__main__':
-    nn_config = {'hidden_count': [8,8]}
+    nn_config = {'hidden_count': [16]}
     ql = Q_Learning('CartPole-v0', nn_config)
     ql.train()
     
